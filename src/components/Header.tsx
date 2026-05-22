@@ -1,5 +1,5 @@
 'use client';
-import { Bookmark, MessageSquare, Bell, Search, Menu } from 'lucide-react';
+import { Bookmark, MessageSquare, Bell, Search, Menu, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Header() {
@@ -19,39 +19,50 @@ export default function Header() {
             </Link>
           </div>
 
+          {/* Navigation Links (Desktop) */}
+          <nav className="hidden md:flex ml-8 space-x-6 items-center flex-1">
+            <div className="relative group cursor-pointer">
+              <div className="flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 py-2">
+                Internships <ChevronDown className="w-4 h-4 ml-1" />
+              </div>
+            </div>
+            <div className="relative group cursor-pointer">
+              <div className="flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 py-2">
+                Jobs <ChevronDown className="w-4 h-4 ml-1" />
+              </div>
+            </div>
+            <div className="relative group cursor-pointer">
+              <div className="flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 py-2">
+                Courses <ChevronDown className="w-4 h-4 ml-1" />
+              </div>
+            </div>
+          </nav>
+
           {/* Search Bar (Hidden on Mobile) */}
-          <div className="hidden md:flex flex-1 max-w-lg ml-8 mr-8">
+          <div className="hidden lg:flex flex-1 max-w-xs mr-6">
             <div className="relative w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" />
+                <Search className="h-4 w-4 text-gray-400" />
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
-                placeholder="Search for internships..."
+                className="block w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+                placeholder="Search..."
               />
             </div>
           </div>
 
-          {/* Right Navigation */}
-          <div className="flex items-center space-x-1 sm:space-x-4">
-            <button className="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hidden sm:block">
-              <Bookmark className="w-5 h-5" />
+          {/* Right Authentication Buttons */}
+          <div className="flex items-center space-x-3">
+            <button className="hidden sm:block text-sm font-medium text-blue-600 border border-blue-600 rounded px-4 py-1.5 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-900/30 transition-colors">
+              Login
             </button>
-            <button className="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hidden sm:block">
-              <MessageSquare className="w-5 h-5" />
+            <button className="text-sm font-medium text-white bg-blue-600 border border-transparent rounded px-4 py-1.5 hover:bg-blue-700 transition-colors">
+              Candidate Sign-up
             </button>
-            <button className="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-900"></span>
+            <button className="hidden md:block text-sm font-medium text-white bg-gray-800 border border-transparent rounded px-4 py-1.5 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors">
+              Employer Sign-up
             </button>
-            
-            {/* Avatar Profile */}
-            <div className="ml-2 flex items-center">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold border border-blue-200">
-                A
-              </div>
-            </div>
           </div>
         </div>
       </div>

@@ -15,7 +15,10 @@ export default function InternshipList() {
     profile: '',
     location: '',
     wfh: false,
+    partTime: false,
+    ppo: false,
     duration: '',
+    minStipend: 0,
   });
 
   useEffect(() => {
@@ -75,7 +78,26 @@ export default function InternshipList() {
         return false;
       }
 
-      // 4. Duration Filter
+      // 4. Part-time Filter
+      if (filters.partTime && !internship.part_time) {
+        return false;
+      }
+
+      // 5. PPO Filter
+      if (filters.ppo && !internship.is_ppo) {
+        return false;
+      }
+
+      // 6. Minimum Stipend Filter
+      if (filters.minStipend > 0) {
+        // Some internships have null stipend values or no salaryValue1
+        const stipendValue = internship.stipend?.salaryValue1 || 0;
+        if (stipendValue < filters.minStipend) {
+          return false;
+        }
+      }
+
+      // 7. Duration Filter
       if (filters.duration) {
         const selectedDuration = parseInt(filters.duration, 10);
         // Extract number from strings like "3 Months" or "6 Weeks"

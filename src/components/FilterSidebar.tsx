@@ -7,12 +7,18 @@ interface FilterProps {
     location: string;
     wfh: boolean;
     duration: string;
+    partTime: boolean;
+    ppo: boolean;
+    minStipend: number;
   };
   setFilters: React.Dispatch<React.SetStateAction<{
     profile: string;
     location: string;
     wfh: boolean;
     duration: string;
+    partTime: boolean;
+    ppo: boolean;
+    minStipend: number;
   }>>;
   profileOptions: string[];
   locationOptions: string[];
@@ -24,7 +30,10 @@ export default function FilterSidebar({ filters, setFilters, profileOptions, loc
       profile: '',
       location: '',
       wfh: false,
+      partTime: false,
+      ppo: false,
       duration: '',
+      minStipend: 0,
     });
   };
 
@@ -78,18 +87,71 @@ export default function FilterSidebar({ filters, setFilters, profileOptions, loc
           </select>
         </div>
 
-        {/* Work from Home Toggle */}
-        <div className="flex items-center">
+        {/* Preferences Toggles */}
+        <div className="space-y-3">
+          <div className="flex items-center">
+            <input
+              id="wfh"
+              type="checkbox"
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+              checked={filters.wfh}
+              onChange={(e) => setFilters({ ...filters, wfh: e.target.checked })}
+            />
+            <label htmlFor="wfh" className="ml-2 block text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none">
+              Work from home
+            </label>
+          </div>
+          
+          <div className="flex items-center">
+            <input
+              id="partTime"
+              type="checkbox"
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+              checked={filters.partTime}
+              onChange={(e) => setFilters({ ...filters, partTime: e.target.checked })}
+            />
+            <label htmlFor="partTime" className="ml-2 block text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none">
+              Part-time
+            </label>
+          </div>
+
+          <div className="flex items-center">
+            <input
+              id="ppo"
+              type="checkbox"
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+              checked={filters.ppo}
+              onChange={(e) => setFilters({ ...filters, ppo: e.target.checked })}
+            />
+            <label htmlFor="ppo" className="ml-2 block text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none">
+              Internships with job offer
+            </label>
+          </div>
+        </div>
+
+        {/* Minimum Stipend Filter */}
+        <div>
+          <div className="flex justify-between items-center mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Minimum Stipend
+            </label>
+            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+              ₹{filters.minStipend.toLocaleString()}
+            </span>
+          </div>
           <input
-            id="wfh"
-            type="checkbox"
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
-            checked={filters.wfh}
-            onChange={(e) => setFilters({ ...filters, wfh: e.target.checked })}
+            type="range"
+            min="0"
+            max="40000"
+            step="2000"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+            value={filters.minStipend}
+            onChange={(e) => setFilters({ ...filters, minStipend: parseInt(e.target.value) })}
           />
-          <label htmlFor="wfh" className="ml-2 block text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none">
-            Work from home
-          </label>
+          <div className="flex justify-between text-xs text-gray-500 mt-1 px-1">
+            <span>₹0</span>
+            <span>₹40K</span>
+          </div>
         </div>
 
         {/* Duration Filter */}
