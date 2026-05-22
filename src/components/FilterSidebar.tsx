@@ -14,9 +14,11 @@ interface FilterProps {
     wfh: boolean;
     duration: string;
   }>>;
+  profileOptions: string[];
+  locationOptions: string[];
 }
 
-export default function FilterSidebar({ filters, setFilters }: FilterProps) {
+export default function FilterSidebar({ filters, setFilters, profileOptions, locationOptions }: FilterProps) {
   const handleClear = () => {
     setFilters({
       profile: '',
@@ -47,15 +49,16 @@ export default function FilterSidebar({ filters, setFilters }: FilterProps) {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Profile
           </label>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="e.g. Marketing"
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
-              value={filters.profile}
-              onChange={(e) => setFilters({ ...filters, profile: e.target.value })}
-            />
-          </div>
+          <select
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm appearance-none"
+            value={filters.profile}
+            onChange={(e) => setFilters({ ...filters, profile: e.target.value })}
+          >
+            <option value="">Any Profile</option>
+            {profileOptions.map(profile => (
+              <option key={profile} value={profile}>{profile}</option>
+            ))}
+          </select>
         </div>
 
         {/* Location Filter */}
@@ -63,15 +66,16 @@ export default function FilterSidebar({ filters, setFilters }: FilterProps) {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Location
           </label>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="e.g. Delhi"
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
-              value={filters.location}
-              onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-            />
-          </div>
+          <select
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm appearance-none"
+            value={filters.location}
+            onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+          >
+            <option value="">Any Location</option>
+            {locationOptions.map(location => (
+              <option key={location} value={location}>{location}</option>
+            ))}
+          </select>
         </div>
 
         {/* Work from Home Toggle */}

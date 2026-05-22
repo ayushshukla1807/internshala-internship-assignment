@@ -42,6 +42,15 @@ export default function InternshipList() {
     fetchData();
   }, []);
 
+  // EXTRACT OPTIONS FOR DROPDOWNS
+  const profileOptions = useMemo(() => {
+    return Array.from(new Set(internships.map(i => i.profile_name))).filter(Boolean).sort();
+  }, [internships]);
+
+  const locationOptions = useMemo(() => {
+    return Array.from(new Set(internships.flatMap(i => i.location_names))).filter(Boolean).sort();
+  }, [internships]);
+
   // FRONTEND FILTERING LOGIC
   const filteredInternships = useMemo(() => {
     return internships.filter((internship) => {
@@ -137,7 +146,12 @@ export default function InternshipList() {
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
         <div className="w-full md:w-1/4">
-          <FilterSidebar filters={filters} setFilters={setFilters} />
+          <FilterSidebar 
+            filters={filters} 
+            setFilters={setFilters} 
+            profileOptions={profileOptions}
+            locationOptions={locationOptions}
+          />
         </div>
 
         {/* List */}
