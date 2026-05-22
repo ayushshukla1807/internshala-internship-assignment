@@ -192,7 +192,7 @@ export default function InternshipList() {
                 We couldn't find any internships matching your current filters. Try adjusting your preferences.
               </p>
               <button 
-                onClick={() => setFilters({ profile: '', location: '', wfh: false, duration: '' })}
+                onClick={() => setFilters({ profile: '', location: '', wfh: false, partTime: false, ppo: false, duration: '', minStipend: 0 })}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md font-medium transition-colors"
               >
                 Clear all filters
