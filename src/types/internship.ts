@@ -26,6 +26,7 @@ export interface Internship {
   company_name: string;
   company_url: string;
   is_premium: boolean;
+  is_premium_internship?: boolean;
   employer_name: string;
   company_logo: string;
   type: string;
@@ -38,12 +39,23 @@ export interface Internship {
   stipend: Stipend;
   posted_by_label: string;
   posted_by_label_type: string;
+  posted_on?: string;
+  postedOnDateTime?: number;
+  application_deadline?: string;
+  expiring_in?: string;
   location_names: string[];
   locations: Location[];
   is_ppo: boolean;
   ppo_label_value: string;
+  ppo_salary?: string | null;
   labels_app: string;
+  labels_app_in_card?: string[];
+  segment?: string;
+  is_external?: boolean;
+  eligible_for_easy_apply?: boolean;
+  is_international_job?: boolean;
 }
+
 
 export interface InternshipApiResponse {
   internships_meta: {

@@ -1,79 +1,176 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Command } from 'cmdk';
-import { Search } from 'lucide-react';
+import { Search, Clock, Briefcase, MapPin, X } from 'lucide-react';
+
+const MAX_RECENT = 5;
+const STORAGE_KEY = 'internshala_recent_searches';
+
+const QUICK_PROFILES = ['Software Development', 'Data Science', 'Marketing', 'Design', 'Finance', 'Content Writing'];
+const QUICK_LOCATIONS = ['Delhi', 'Mumbai', 'Bengaluru', 'Hyderabad', 'Work From Home'];
 
 export default function CommandMenu() {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
-  // Toggle the menu when ⌘K is pressed
+  // Load recent searches from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) setRecentSearches(JSON.parse(stored));
+    } catch { /* ignore */ }
+  }, [open]);
+
+  // Toggle on ⌘K / Ctrl+K
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((open) => !open);
+        setOpen((o) => !o);
       }
+      if (e.key === 'Escape') setOpen(false);
     };
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
   }, []);
 
-  return (
-    <Command.Dialog 
-      open={open} 
-      onOpenChange={setOpen}
-      label="Global Command Menu"
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity"
-    >
-      <div className="bg-white dark:bg-gray-900 w-full max-w-xl rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col">
-        <div className="flex items-center border-b border-gray-200 dark:border-gray-800 px-4 py-3">
-          <Search className="w-5 h-5 text-gray-400 mr-3 shrink-0" />
-          <Command.Input 
-            autoFocus
-            placeholder="Search internships, companies, or locations..." 
-            className="flex-1 bg-transparent border-none outline-none text-gray-900 dark:text-gray-100 placeholder:text-gray-500 w-full text-lg"
-          />
-        </div>
-        <Command.List className="max-h-[60vh] overflow-y-auto p-2">
-          <Command.Empty className="py-6 text-center text-gray-500">No results found.</Command.Empty>
+  const addRecent = useCallback((term: string) => {
+    setRecentSearches((prev) => {
+      const updated = [term, ...prev.filter((s) => s !== term)].slice(0, MAX_RECENT);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
-          <Command.Group heading="Quick Actions" className="px-2 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            <Command.Item 
-              onSelect={() => { setOpen(false); window.scrollTo({top: 0, behavior: 'smooth'}); }}
-              className="flex items-center px-3 py-2 mt-1 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 transition-colors text-sm text-gray-900 dark:text-gray-100"
+  const removeRecent = useCallback((term: string) => {
+    setRecentSearches((prev) => {
+      const updated = prev.filter((s) => s !== term);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const handleSelect = useCallback((term: string) => {
+    addRecent(term);
+    setOpen(false);
+    setQuery('');
+  }, [addRecent]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4 bg-black/50 backdrop-blur-sm"
+      onClick={() => setOpen(false)}
+    >
+      <Command
+        label="Search internships"
+        className="bg-white dark:bg-gray-900 w-full max-w-xl rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Search Input */}
+        <div className="flex items-center border-b border-gray-200 dark:border-gray-800 px-4 py-3.5 gap-3">
+          <Search className="w-5 h-5 text-gray-400 shrink-0" />
+          <Command.Input
+            autoFocus
+            value={query}
+            onValueChange={setQuery}
+            placeholder="Search internships, companies, locations..."
+            className="flex-1 bg-transparent border-none outline-none text-gray-900 dark:text-gray-100 placeholder:text-gray-400 text-base"
+          />
+          <kbd className="hidden sm:flex items-center gap-1 text-[10px] font-medium text-gray-400 border border-gray-200 dark:border-gray-700 rounded px-1.5 py-0.5">
+            ESC
+          </kbd>
+        </div>
+
+        <Command.List className="max-h-[60vh] overflow-y-auto p-2">
+          <Command.Empty className="py-10 text-center text-sm text-gray-500">
+            No results found for &quot;{query}&quot;
+          </Command.Empty>
+
+          {/* Recent Searches */}
+          {recentSearches.length > 0 && (
+            <Command.Group
+              heading={
+                <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-400 px-2 py-1.5">
+                  <Clock className="w-3 h-3" /> Recent Searches
+                </span>
+              }
             >
-              Back to top
-            </Command.Item>
-            <Command.Item 
-              onSelect={() => { setOpen(false); }}
-              className="flex items-center px-3 py-2 mt-1 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 transition-colors text-sm text-gray-900 dark:text-gray-100"
-            >
-              Close search
-            </Command.Item>
+              {recentSearches.map((term) => (
+                <Command.Item
+                  key={term}
+                  value={term}
+                  onSelect={() => handleSelect(term)}
+                  className="flex items-center justify-between px-3 py-2 mt-0.5 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 transition-colors text-sm text-gray-700 dark:text-gray-300 group"
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3.5 h-3.5 text-gray-400" />
+                    {term}
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); removeRecent(term); }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:text-red-500"
+                    aria-label={`Remove ${term} from recent`}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </Command.Item>
+              ))}
+            </Command.Group>
+          )}
+
+          {/* Top Profiles */}
+          <Command.Group
+            heading={
+              <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-400 px-2 py-1.5 mt-1">
+                <Briefcase className="w-3 h-3" /> Top Profiles
+              </span>
+            }
+          >
+            {QUICK_PROFILES.map((profile) => (
+              <Command.Item
+                key={profile}
+                value={profile}
+                onSelect={() => handleSelect(profile)}
+                className="flex items-center gap-2.5 px-3 py-2 mt-0.5 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 transition-colors text-sm text-gray-700 dark:text-gray-300"
+              >
+                <Briefcase className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                {profile}
+              </Command.Item>
+            ))}
           </Command.Group>
 
-          <Command.Group heading="Top Profiles" className="px-2 py-2 mt-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-t border-gray-100 dark:border-gray-800">
-            <Command.Item 
-              onSelect={() => { setOpen(false); /* Normally would trigger filter */ }}
-              className="flex items-center px-3 py-2 mt-1 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 transition-colors text-sm text-gray-900 dark:text-gray-100"
-            >
-              Software Engineering
-            </Command.Item>
-            <Command.Item 
-              onSelect={() => { setOpen(false); }}
-              className="flex items-center px-3 py-2 mt-1 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 transition-colors text-sm text-gray-900 dark:text-gray-100"
-            >
-              Data Science
-            </Command.Item>
-            <Command.Item 
-              onSelect={() => { setOpen(false); }}
-              className="flex items-center px-3 py-2 mt-1 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 transition-colors text-sm text-gray-900 dark:text-gray-100"
-            >
-              Marketing
-            </Command.Item>
+          {/* Top Locations */}
+          <Command.Group
+            heading={
+              <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-400 px-2 py-1.5 mt-1">
+                <MapPin className="w-3 h-3" /> Top Locations
+              </span>
+            }
+          >
+            {QUICK_LOCATIONS.map((location) => (
+              <Command.Item
+                key={location}
+                value={location}
+                onSelect={() => handleSelect(location)}
+                className="flex items-center gap-2.5 px-3 py-2 mt-0.5 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 transition-colors text-sm text-gray-700 dark:text-gray-300"
+              >
+                <MapPin className="w-3.5 h-3.5 text-green-500 shrink-0" />
+                {location}
+              </Command.Item>
+            ))}
           </Command.Group>
         </Command.List>
-      </div>
-    </Command.Dialog>
+
+        {/* Footer hint */}
+        <div className="border-t border-gray-100 dark:border-gray-800 px-4 py-2 flex items-center gap-4 text-[11px] text-gray-400">
+          <span className="flex items-center gap-1"><kbd className="border border-gray-200 dark:border-gray-700 rounded px-1">↑↓</kbd> navigate</span>
+          <span className="flex items-center gap-1"><kbd className="border border-gray-200 dark:border-gray-700 rounded px-1">↵</kbd> select</span>
+          <span className="flex items-center gap-1"><kbd className="border border-gray-200 dark:border-gray-700 rounded px-1">ESC</kbd> close</span>
+        </div>
+      </Command>
+    </div>
   );
 }
