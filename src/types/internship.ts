@@ -54,6 +54,7 @@ export interface Internship {
   is_external?: boolean;
   eligible_for_easy_apply?: boolean;
   is_international_job?: boolean;
+  office_days?: string | null;
 }
 
 

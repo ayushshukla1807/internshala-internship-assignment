@@ -43,7 +43,7 @@ function Badge({
   tooltip,
 }: {
   children: React.ReactNode;
-  color?: 'blue' | 'green' | 'purple' | 'gray';
+  color?: 'blue' | 'green' | 'purple' | 'gray' | 'orange' | 'pink';
   tooltip?: string;
 }) {
   const colorMap = {
@@ -51,6 +51,8 @@ function Badge({
     green: 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300',
     purple: 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
     gray: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
+    orange: 'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
+    pink: 'bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300',
   };
 
   const badge = (
@@ -132,7 +134,7 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
       <article className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col h-full overflow-hidden">
         <div className="p-4 flex-1">
           <div className="flex justify-between items-start mb-3">
-            <CompanyAvatar name={internship.company_name} size="sm" />
+            <CompanyAvatar name={internship.company_name} logo={internship.company_logo} size="sm" />
             <BookmarkButton bookmarked={bookmarked} onClick={handleBookmark} />
           </div>
 
@@ -163,18 +165,20 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
           <div className="flex flex-wrap gap-1.5 mt-3">
             {internship.is_ppo && (
               <Badge color="blue" tooltip="This internship may convert to a full-time job offer">
-                With Job Offer
+                {internship.ppo_label_value || 'With Job Offer'}
               </Badge>
             )}
             {internship.part_time && (
-              <Badge color="purple" tooltip="Flexible, part-time working hours">
-                Part-time
-              </Badge>
+              <Badge color="purple" tooltip="Flexible, part-time working hours">Part-time</Badge>
             )}
             {internship.work_from_home && (
-              <Badge color="green" tooltip="Work remotely from anywhere">
-                Work From Home
-              </Badge>
+              <Badge color="green" tooltip="Work remotely from anywhere">Work From Home</Badge>
+            )}
+            {internship.is_international_job && (
+              <Badge color="orange" tooltip="This is an international internship">International</Badge>
+            )}
+            {internship.segment === 'internship_for_women' && (
+              <Badge color="pink" tooltip="This internship is open for women candidates">For Women</Badge>
             )}
           </div>
         </div>
@@ -214,7 +218,7 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
           </div>
           <div className="flex items-center gap-2 ml-4 shrink-0">
             <BookmarkButton bookmarked={bookmarked} onClick={handleBookmark} />
-            <CompanyAvatar name={internship.company_name} size="md" />
+            <CompanyAvatar name={internship.company_name} logo={internship.company_logo} size="md" />
           </div>
         </div>
 
@@ -242,25 +246,32 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
         <div className="flex flex-wrap gap-2 mt-4">
           {internship.is_ppo && (
             <Badge color="blue" tooltip="This internship may convert to a full-time job offer">
-              With Job Offer
+              {internship.ppo_label_value || 'With Job Offer'}
             </Badge>
           )}
           {internship.part_time && (
-            <Badge color="purple" tooltip="Flexible, part-time working hours">
-              Part-time
-            </Badge>
+            <Badge color="purple" tooltip="Flexible, part-time working hours">Part-time</Badge>
           )}
           {internship.work_from_home && (
-            <Badge color="green" tooltip="Work remotely from anywhere">
-              Work From Home
-            </Badge>
+            <Badge color="green" tooltip="Work remotely from anywhere">Work From Home</Badge>
           )}
           {internship.is_premium && (
-            <Badge color="gray" tooltip="Verified premium employer">
-              Premium
-            </Badge>
+            <Badge color="gray" tooltip="Verified premium employer">Premium</Badge>
+          )}
+          {internship.is_international_job && (
+            <Badge color="orange" tooltip="This is an international internship">International</Badge>
+          )}
+          {internship.segment === 'internship_for_women' && (
+            <Badge color="pink" tooltip="Open for women candidates">For Women</Badge>
           )}
         </div>
+
+        {/* Office Days (only shown when not WFH) */}
+        {internship.office_days && !internship.work_from_home && (
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            {internship.office_days}
+          </p>
+        )}
       </div>
 
       {/* Footer */}
@@ -321,8 +332,28 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
 
 // ─── Shared Micro-components (keep components small and focused) ──────────────
 
-function CompanyAvatar({ name, size }: { name: string; size: 'sm' | 'md' }) {
+/**
+ * Displays the company logo from Internshala's CDN.
+ * Falls back to a generated letter avatar if the logo URL is empty or broken.
+ */
+function CompanyAvatar({ name, logo, size }: { name: string; logo?: string; size: 'sm' | 'md' }) {
+  const [imgError, setImgError] = useState(false);
   const sizeClass = size === 'md' ? 'w-11 h-11 text-base' : 'w-9 h-9 text-sm';
+  const cdnUrl = logo ? `https://internshala.com/static/images/company_logos/${logo}` : null;
+
+  if (cdnUrl && !imgError) {
+    return (
+      <div className={`${sizeClass} shrink-0 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden bg-white`}>
+        <img
+          src={cdnUrl}
+          alt={`${name} logo`}
+          className="w-full h-full object-contain"
+          onError={() => setImgError(true)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       className={`${sizeClass} shrink-0 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg flex items-center justify-center font-bold text-gray-500 dark:text-gray-300`}
