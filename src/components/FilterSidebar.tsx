@@ -112,10 +112,10 @@ export default function FilterSidebar({ filters, setFilters, profileOptions, loc
           <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">Preferences</p>
           <div className="space-y-3">
             {[
-              { id: 'wfh', label: 'Work From Home', key: 'wfh', emoji: '🏠' },
-              { id: 'partTime', label: 'Part-time', key: 'partTime', emoji: '⏰' },
-              { id: 'ppo', label: 'With Job Offer (PPO)', key: 'ppo', emoji: '🏆' },
-            ].map(({ id, label, key, emoji }) => (
+              { id: 'wfh', label: 'Work From Home', key: 'wfh' },
+              { id: 'partTime', label: 'Part-time', key: 'partTime' },
+              { id: 'ppo', label: 'With Job Offer (PPO)', key: 'ppo' },
+            ].map(({ id, label, key }) => (
               <label
                 key={id}
                 htmlFor={id}
@@ -133,7 +133,7 @@ export default function FilterSidebar({ filters, setFilters, profileOptions, loc
                   <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 peer-checked:translate-x-4" />
                 </div>
                 <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 select-none transition-colors">
-                  {emoji} {label}
+                  {label}
                 </span>
               </label>
             ))}

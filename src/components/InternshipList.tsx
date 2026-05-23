@@ -160,9 +160,9 @@ export default function InternshipList() {
 
   const sortLabels: Record<SortOption, string> = {
     default: 'Relevance',
-    stipend_high: '💰 Highest Stipend',
-    newest: '🕐 Newest First',
-    shortest: '⚡ Shortest Duration',
+    stipend_high: 'Highest Stipend',
+    newest: 'Newest First',
+    shortest: 'Shortest Duration',
   };
 
   const clearFilters = useCallback(() => {
@@ -287,7 +287,7 @@ export default function InternshipList() {
                     Loading more internships...
                   </div>
                 ) : (
-                  <p className="text-gray-400 text-sm py-4">✅ All {filteredInternships.length} internships loaded</p>
+                  <p className="text-gray-400 text-sm py-4">All {filteredInternships.length} internships loaded</p>
                 )}
               </div>
             </>
