@@ -2,8 +2,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import FilterSidebar from './FilterSidebar';
 import InternshipCard from './InternshipCard';
+import SkeletonLoader from './SkeletonLoader';
 import { Internship, InternshipApiResponse } from '@/types/internship';
 import { SearchX, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function InternshipList() {
   const [internships, setInternships] = useState<Internship[]>([]);
@@ -117,35 +119,6 @@ export default function InternshipList() {
     });
   }, [internships, filters]);
 
-  if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 hidden md:block">
-          <div className="bg-gray-200 dark:bg-gray-800 h-96 rounded-lg animate-pulse"></div>
-        </div>
-        <div className="w-full md:w-3/4 space-y-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg h-48 border border-gray-200 dark:border-gray-700 p-5 flex flex-col justify-between">
-              <div className="flex justify-between">
-                 <div className="space-y-3 w-3/4">
-                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 animate-pulse"></div>
-                 </div>
-                 <div className="h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-              </div>
-              <div className="grid grid-cols-4 gap-4 mt-6">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
@@ -159,12 +132,6 @@ export default function InternshipList() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          {filteredInternships.length} internships matching your preferences
-        </h1>
-      </div>
-
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
         <div className="w-full md:w-1/4">
@@ -178,27 +145,49 @@ export default function InternshipList() {
 
         {/* List */}
         <div className="w-full md:w-3/4">
-          {filteredInternships.length > 0 ? (
-            filteredInternships.map((internship) => (
-              <InternshipCard key={internship.id} internship={internship} />
-            ))
-          ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center">
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-full mb-4">
-                <SearchX className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-4 mb-6 shadow-sm border border-gray-200 dark:border-gray-800 flex items-center justify-between">
+            <span className="text-gray-700 dark:text-gray-300 font-medium">{filteredInternships.length} internships found</span>
+          </div>
+
+          <div className="space-y-4">
+            {loading ? (
+              // Skeleton Loaders
+              [...Array(5)].map((_, i) => (
+                <SkeletonLoader key={`skeleton-${i}`} />
+              ))
+            ) : filteredInternships.length > 0 ? (
+              <AnimatePresence mode="popLayout">
+                {filteredInternships.map((internship, index) => (
+                  <motion.div
+                    key={internship.id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                  >
+                    <InternshipCard internship={internship} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            ) : (
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center">
+                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-full mb-4">
+                  <SearchX className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No internships found</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-sm mb-6 text-sm">
+                  We couldn't find any internships matching your current filters. Try adjusting your preferences.
+                </p>
+                <button 
+                  onClick={() => setFilters({ profile: '', location: '', wfh: false, partTime: false, ppo: false, duration: '', minStipend: 0 })}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md font-medium transition-colors"
+                >
+                  Clear all filters
+                </button>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No internships found</h3>
-              <p className="text-gray-500 dark:text-gray-400 max-w-sm mb-6 text-sm">
-                We couldn't find any internships matching your current filters. Try adjusting your preferences.
-              </p>
-              <button 
-                onClick={() => setFilters({ profile: '', location: '', wfh: false, partTime: false, ppo: false, duration: '', minStipend: 0 })}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md font-medium transition-colors"
-              >
-                Clear all filters
-              </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

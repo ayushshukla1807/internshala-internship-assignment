@@ -1,6 +1,7 @@
 'use client';
 import { MapPin, Briefcase, PlayCircle, Calendar, IndianRupee, Clock } from 'lucide-react';
 import { Internship } from '@/types/internship';
+import { toast } from 'sonner';
 
 export default function InternshipCard({ internship }: { internship: Internship }) {
   return (
@@ -88,11 +89,17 @@ export default function InternshipCard({ internship }: { internship: Internship 
           <Clock className="w-3 h-3 mr-1" />
           {internship.posted_by_label}
         </div>
-        <div className="flex gap-3">
-          <button className="text-blue-600 dark:text-blue-400 text-sm font-semibold hover:text-blue-800 dark:hover:text-blue-300">
-            View details
+        <div className="flex space-x-3 w-full sm:w-auto">
+          <button 
+            onClick={() => toast.info(`Viewing details for ${internship.title}`)}
+            className="flex-1 sm:flex-none px-4 py-2 text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 font-medium rounded hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+          >
+            View Details
           </button>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-md text-sm font-semibold transition-colors">
+          <button 
+            onClick={() => toast.success(`Successfully applied to ${internship.company_name}!`)}
+            className="flex-1 sm:flex-none px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded transition-colors"
+          >
             Apply now
           </button>
         </div>

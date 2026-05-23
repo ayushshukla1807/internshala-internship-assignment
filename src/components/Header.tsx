@@ -1,8 +1,16 @@
 'use client';
-import { Bookmark, MessageSquare, Bell, Search, Menu, ChevronDown } from 'lucide-react';
+import { Bookmark, MessageSquare, Bell, Search, Menu, ChevronDown, Sun, Moon } from 'lucide-react';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
+import { useState, useEffect } from 'react';
 
 export default function Header() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm dark:bg-gray-900 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,8 +60,18 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Right Authentication Buttons */}
+          {/* Right Authentication & Theme Buttons */}
           <div className="flex items-center space-x-3">
+            {mounted && (
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Toggle Dark Mode"
+              >
+                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+            )}
+            
             <button className="hidden sm:block text-sm font-medium text-blue-600 border border-blue-600 rounded px-4 py-1.5 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-900/30 transition-colors">
               Login
             </button>
