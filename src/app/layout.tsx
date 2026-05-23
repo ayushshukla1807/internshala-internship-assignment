@@ -10,10 +10,10 @@ import ScrollToTop from '@/components/ScrollToTop';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Internshala Search | Vercel Clone',
+  title: 'Internship Search | Internshala',
   description: 'Enterprise-grade clone of the Internshala internship search page. Built with Next.js 14, Tailwind CSS, Framer Motion, and Cmd+K Search.',
   openGraph: {
-    title: 'Internshala Search | Vercel Clone',
+    title: 'Internship Search | Internshala',
     description: 'Enterprise-grade clone of the Internshala internship search page. Features staggered animations, skeleton loaders, and spotlight search.',
     url: 'https://internshala-clone-jnzbr2ztw-ayushs-projects-e98c33db.vercel.app',
     siteName: 'Internshala Clone',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Internshala Search | Vercel Clone',
+    title: 'Internship Search | Internshala',
     description: 'Enterprise-grade clone of the Internshala internship search page.',
     images: ['https://internshala.com/static/images/internships_for_facebook.png'],
   },
