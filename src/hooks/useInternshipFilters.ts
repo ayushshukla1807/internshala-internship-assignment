@@ -4,6 +4,7 @@ import { Internship, InternshipApiResponse } from '@/types/internship';
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface Filters {
+  keyword: string;   // NEW: free-text keyword search
   profile: string;
   location: string;
   wfh: boolean;
@@ -15,7 +16,8 @@ export interface Filters {
 
 export type SortOption = 'default' | 'stipend_high' | 'newest' | 'shortest';
 
-const INITIAL_FILTERS: Filters = {
+export const INITIAL_FILTERS: Filters = {
+  keyword: '',
   profile: '',
   location: '',
   wfh: false,
@@ -67,7 +69,7 @@ export function useInternshipFilters() {
     fetchInternships();
   }, []);
 
-  // Derive unique dropdown options from raw data
+  // Derive unique autocomplete options from raw data
   const profileOptions = useMemo(
     () => Array.from(new Set(internships.map((i) => i.profile_name))).filter(Boolean).sort(),
     [internships]
@@ -81,8 +83,21 @@ export function useInternshipFilters() {
   // Apply all active filters
   const filteredInternships = useMemo(() => {
     let result = internships.filter((internship) => {
-      const { profile, location, wfh, partTime, ppo, minStipend, duration } = filters;
+      const { keyword, profile, location, wfh, partTime, ppo, minStipend, duration } = filters;
 
+      // Keyword: matches title, company name, or location
+      if (keyword) {
+        const kw = keyword.toLowerCase();
+        const matchesTitle = internship.title.toLowerCase().includes(kw);
+        const matchesCompany = internship.company_name.toLowerCase().includes(kw);
+        const matchesLocation = internship.location_names?.some((loc) =>
+          loc.toLowerCase().includes(kw)
+        );
+        const matchesProfile = internship.profile_name?.toLowerCase().includes(kw);
+        if (!matchesTitle && !matchesCompany && !matchesLocation && !matchesProfile) return false;
+      }
+
+      // Profile: matches title or profile_name
       if (profile) {
         const profileLower = profile.toLowerCase();
         const matchesTitle = internship.title.toLowerCase().includes(profileLower);
@@ -90,6 +105,7 @@ export function useInternshipFilters() {
         if (!matchesTitle && !matchesProfile) return false;
       }
 
+      // Location
       if (location) {
         const locationLower = location.toLowerCase();
         const matchesLocation = internship.location_names?.some((loc) =>
@@ -146,6 +162,7 @@ export function useInternshipFilters() {
 
   const activeFilterCount = useMemo(() => {
     return [
+      filters.keyword,
       filters.profile,
       filters.location,
       filters.wfh,
@@ -170,7 +187,7 @@ export function useInternshipFilters() {
     // Sort state
     sortBy,
     setSortBy,
-    // Dropdown options
+    // Autocomplete options
     profileOptions,
     locationOptions,
   };

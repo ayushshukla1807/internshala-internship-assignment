@@ -103,6 +103,23 @@ export default function InternshipList() {
         {/* ── Main Content ─────────────────────────────────────────────── */}
         <section className="w-full md:w-3/4" aria-label="Internship listings">
 
+          {/* Breadcrumb */}
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <span className="hover:text-blue-600 cursor-pointer transition-colors">Home</span>
+            <span>/</span>
+            <span className="text-gray-900 dark:text-gray-200 font-medium">Internships</span>
+          </nav>
+
+          {/* Total Count Header */}
+          {!loading && filteredInternships.length > 0 && (
+            <div className="mb-4">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                {filteredInternships.length.toLocaleString()} Total Internships
+              </h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Latest Internships in India</p>
+            </div>
+          )}
+
           {/* Controls Bar */}
           <div className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3 mb-6 shadow-sm border border-gray-200 dark:border-gray-800 flex flex-wrap items-center justify-between gap-3">
             <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">

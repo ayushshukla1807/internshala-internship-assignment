@@ -214,7 +214,15 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-default">
               {internship.title}
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{internship.company_name}</p>
+            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+              <p className="text-sm text-gray-500 dark:text-gray-400">{internship.company_name}</p>
+              {internship.is_active && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 mr-1 animate-pulse" />
+                  Actively hiring
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2 ml-4 shrink-0">
             <BookmarkButton bookmarked={bookmarked} onClick={handleBookmark} />
@@ -266,11 +274,25 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
           )}
         </div>
 
-        {/* Office Days (only shown when not WFH) */}
+        {/* Office Days */}
         {internship.office_days && !internship.work_from_home && (
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
             {internship.office_days}
           </p>
+        )}
+
+        {/* Skills / Labels */}
+        {internship.labels_app_in_card && internship.labels_app_in_card.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {internship.labels_app_in_card.map((label) => (
+              <span
+                key={label}
+                className="px-2.5 py-0.5 text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-full"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
         )}
       </div>
 

@@ -1,156 +1,166 @@
 'use client';
-import { Filter, X, Home, Clock, Briefcase, IndianRupee, Calendar } from 'lucide-react';
+import { useState } from 'react';
+import { Filter, X, Home, IndianRupee, Calendar, ChevronDown, Search } from 'lucide-react';
+import { Filters, INITIAL_FILTERS } from '@/hooks/useInternshipFilters';
 
-interface FilterProps {
-  filters: {
-    profile: string;
-    location: string;
-    wfh: boolean;
-    duration: string;
-    partTime: boolean;
-    ppo: boolean;
-    minStipend: number;
-  };
-  setFilters: React.Dispatch<React.SetStateAction<{
-    profile: string;
-    location: string;
-    wfh: boolean;
-    duration: string;
-    partTime: boolean;
-    ppo: boolean;
-    minStipend: number;
-  }>>;
+interface FilterSidebarProps {
+  filters: Filters;
+  setFilters: React.Dispatch<React.SetStateAction<Filters>>;
   profileOptions: string[];
   locationOptions: string[];
 }
 
-const activeFilterCount = (filters: FilterProps['filters']) => {
-  let count = 0;
-  if (filters.profile) count++;
-  if (filters.location) count++;
-  if (filters.wfh) count++;
-  if (filters.partTime) count++;
-  if (filters.ppo) count++;
-  if (filters.minStipend > 0) count++;
-  if (filters.duration) count++;
-  return count;
-};
+const activeFilterCount = (filters: Filters): number =>
+  [
+    filters.keyword,
+    filters.profile,
+    filters.location,
+    filters.wfh,
+    filters.partTime,
+    filters.ppo,
+    filters.minStipend > 0,
+    filters.duration,
+  ].filter(Boolean).length;
 
-export default function FilterSidebar({ filters, setFilters, profileOptions, locationOptions }: FilterProps) {
-  const handleClear = () => {
-    setFilters({ profile: '', location: '', wfh: false, partTime: false, ppo: false, duration: '', minStipend: 0 });
-  };
+export default function FilterSidebar({
+  filters,
+  setFilters,
+  profileOptions,
+  locationOptions,
+}: FilterSidebarProps) {
+  const [showMore, setShowMore] = useState(false);
+  const count = activeFilterCount(filters);
 
-  const activeCount = activeFilterCount(filters);
+  const handleClear = () => setFilters(INITIAL_FILTERS);
+
+  const set = <K extends keyof Filters>(key: K, value: Filters[K]) =>
+    setFilters((prev) => ({ ...prev, [key]: value }));
 
   return (
-    <div className="glass border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-5 transition-all duration-300">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2 text-gray-800 dark:text-gray-200 font-semibold text-lg">
-          <Filter className="w-5 h-5 text-blue-500" />
+      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+        <div className="flex items-center gap-2 font-semibold text-gray-800 dark:text-gray-200">
+          <Filter className="w-4 h-4 text-blue-500" />
           Filters
-          {activeCount > 0 && (
-            <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-blue-600 text-white rounded-full">
-              {activeCount}
+          {count > 0 && (
+            <span className="w-5 h-5 flex items-center justify-center bg-blue-600 text-white text-xs font-bold rounded-full">
+              {count}
             </span>
           )}
         </div>
-        {activeCount > 0 && (
+        {count > 0 && (
           <button
             onClick={handleClear}
             aria-label="Clear all filters"
-            className="flex items-center gap-1 text-xs font-medium text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full transition-colors"
+            className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 transition-colors"
           >
             <X className="w-3 h-3" /> Clear all
           </button>
         )}
       </div>
 
-      <div className="space-y-5">
-        {/* Profile Filter */}
+      <div className="p-5 space-y-5">
+        {/* Keyword Search */}
         <div>
-          <label htmlFor="profile-filter" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
-            <Briefcase className="w-3.5 h-3.5" /> Profile
+          <label htmlFor="keyword-search" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            Keyword Search
           </label>
-          <select
-            id="profile-filter"
-            className="w-full border border-gray-200 dark:border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white text-sm bg-white/80 transition-colors"
-            value={filters.profile}
-            onChange={(e) => setFilters({ ...filters, profile: e.target.value })}
-          >
-            <option value="">Any Profile</option>
-            {profileOptions.map(profile => (
-              <option key={profile} value={profile}>{profile}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Location Filter */}
-        <div>
-          <label htmlFor="location-filter" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
-            <Home className="w-3.5 h-3.5" /> Location
-          </label>
-          <select
-            id="location-filter"
-            className="w-full border border-gray-200 dark:border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white text-sm bg-white/80 transition-colors"
-            value={filters.location}
-            onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-          >
-            <option value="">Any Location</option>
-            {locationOptions.map(location => (
-              <option key={location} value={location}>{location}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Divider */}
-        <div className="border-t border-gray-100 dark:border-gray-700" />
-
-        {/* Toggle Filters */}
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">Preferences</p>
-          <div className="space-y-3">
-            {[
-              { id: 'wfh', label: 'Work From Home', key: 'wfh' },
-              { id: 'partTime', label: 'Part-time', key: 'partTime' },
-              { id: 'ppo', label: 'With Job Offer (PPO)', key: 'ppo' },
-            ].map(({ id, label, key }) => (
-              <label
-                key={id}
-                htmlFor={id}
-                className="flex items-center gap-3 cursor-pointer group"
-              >
-                <div className="relative">
-                  <input
-                    id={id}
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={filters[key as keyof typeof filters] as boolean}
-                    onChange={(e) => setFilters({ ...filters, [key]: e.target.checked })}
-                  />
-                  <div className="w-9 h-5 bg-gray-200 dark:bg-gray-700 rounded-full peer-checked:bg-blue-600 transition-colors duration-200" />
-                  <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 peer-checked:translate-x-4" />
-                </div>
-                <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 select-none transition-colors">
-                  {label}
-                </span>
-              </label>
-            ))}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+            <input
+              id="keyword-search"
+              type="text"
+              placeholder="e.g. Design, Mumbai, Infosys"
+              className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              value={filters.keyword}
+              onChange={(e) => set('keyword', e.target.value)}
+            />
           </div>
         </div>
 
-        {/* Divider */}
         <div className="border-t border-gray-100 dark:border-gray-700" />
 
-        {/* Min Stipend Slider */}
+        {/* Profile (autocomplete) */}
+        <div>
+          <label htmlFor="profile-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            Profile
+          </label>
+          <input
+            id="profile-filter"
+            list="profile-options"
+            type="text"
+            placeholder="e.g. Marketing"
+            className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            value={filters.profile}
+            onChange={(e) => set('profile', e.target.value)}
+          />
+          <datalist id="profile-options">
+            {profileOptions.map((p) => (
+              <option key={p} value={p} />
+            ))}
+          </datalist>
+        </div>
+
+        {/* Location (autocomplete) */}
+        <div>
+          <label htmlFor="location-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            Location
+          </label>
+          <input
+            id="location-filter"
+            list="location-options"
+            type="text"
+            placeholder="e.g. Delhi"
+            className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            value={filters.location}
+            onChange={(e) => set('location', e.target.value)}
+          />
+          <datalist id="location-options">
+            {locationOptions.map((l) => (
+              <option key={l} value={l} />
+            ))}
+          </datalist>
+        </div>
+
+        <div className="border-t border-gray-100 dark:border-gray-700" />
+
+        {/* Checkboxes */}
+        <div className="space-y-3">
+          {[
+            { id: 'wfh', label: 'Work from home', key: 'wfh' as keyof Filters },
+            { id: 'partTime', label: 'Part-time', key: 'partTime' as keyof Filters },
+            { id: 'ppo', label: 'Internships with job offer', key: 'ppo' as keyof Filters },
+          ].map(({ id, label, key }) => (
+            <label key={id} htmlFor={id} className="flex items-center gap-2.5 cursor-pointer group">
+              <div className="relative shrink-0">
+                <input
+                  id={id}
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={filters[key] as boolean}
+                  onChange={(e) => set(key, e.target.checked as Filters[typeof key])}
+                />
+                <div className="w-9 h-5 bg-gray-200 dark:bg-gray-700 rounded-full peer-checked:bg-blue-600 transition-colors" />
+                <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4" />
+              </div>
+              <span className="text-sm text-gray-700 dark:text-gray-300 select-none group-hover:text-gray-900 dark:group-hover:text-gray-100">
+                {label}
+              </span>
+            </label>
+          ))}
+        </div>
+
+        <div className="border-t border-gray-100 dark:border-gray-700" />
+
+        {/* Min Stipend */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <label htmlFor="stipend-filter" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              <IndianRupee className="w-3.5 h-3.5" /> Min. Stipend
+            <label htmlFor="stipend-filter" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <IndianRupee className="w-3.5 h-3.5" /> Min. Monthly Stipend
             </label>
-            <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
-              {filters.minStipend === 0 ? 'Any' : `₹${filters.minStipend.toLocaleString('en-IN')}/mo`}
+            <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+              {filters.minStipend === 0 ? 'Any' : `₹${filters.minStipend.toLocaleString('en-IN')}`}
             </span>
           </div>
           <input
@@ -159,12 +169,12 @@ export default function FilterSidebar({ filters, setFilters, profileOptions, loc
             min="0"
             max="40000"
             step="2000"
-            aria-label="Minimum stipend slider"
-            className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600"
+            aria-label="Minimum stipend"
+            className="w-full accent-blue-600"
             value={filters.minStipend}
-            onChange={(e) => setFilters({ ...filters, minStipend: parseInt(e.target.value) })}
+            onChange={(e) => set('minStipend', parseInt(e.target.value))}
           />
-          <div className="flex justify-between text-xs text-gray-400 mt-1.5">
+          <div className="flex justify-between text-xs text-gray-400 mt-1">
             <span>₹0</span>
             <span>₹10K</span>
             <span>₹20K</span>
@@ -172,25 +182,60 @@ export default function FilterSidebar({ filters, setFilters, profileOptions, loc
           </div>
         </div>
 
-        {/* Duration */}
-        <div>
-          <label htmlFor="duration-filter" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
-            <Calendar className="w-3.5 h-3.5" /> Max Duration
-          </label>
-          <select
-            id="duration-filter"
-            className="w-full border border-gray-200 dark:border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white text-sm bg-white/80 transition-colors"
-            value={filters.duration}
-            onChange={(e) => setFilters({ ...filters, duration: e.target.value })}
-          >
-            <option value="">Any Duration</option>
-            <option value="1">Up to 1 Month</option>
-            <option value="2">Up to 2 Months</option>
-            <option value="3">Up to 3 Months</option>
-            <option value="4">Up to 4 Months</option>
-            <option value="6">Up to 6 Months</option>
-          </select>
-        </div>
+        {/* View more filters toggle */}
+        <button
+          onClick={() => setShowMore((v) => !v)}
+          aria-expanded={showMore}
+          className="flex items-center gap-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 transition-colors"
+        >
+          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showMore ? 'rotate-180' : ''}`} />
+          {showMore ? 'View fewer filters' : 'View more filters'}
+        </button>
+
+        {/* More filters (collapsed by default) */}
+        {showMore && (
+          <div className="space-y-4">
+            <div className="border-t border-gray-100 dark:border-gray-700" />
+
+            {/* Duration */}
+            <div>
+              <label htmlFor="duration-filter" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                <Calendar className="w-3.5 h-3.5" /> Max Duration
+              </label>
+              <select
+                id="duration-filter"
+                className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                value={filters.duration}
+                onChange={(e) => set('duration', e.target.value)}
+              >
+                <option value="">Any Duration</option>
+                <option value="1">Up to 1 Month</option>
+                <option value="2">Up to 2 Months</option>
+                <option value="3">Up to 3 Months</option>
+                <option value="4">Up to 4 Months</option>
+                <option value="6">Up to 6 Months</option>
+              </select>
+            </div>
+
+            {/* Home city toggle */}
+            <label htmlFor="home-city" className="flex items-center gap-2.5 cursor-pointer group">
+              <div className="relative shrink-0">
+                <input
+                  id="home-city"
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={filters.location === 'Delhi'}
+                  onChange={(e) => set('location', e.target.checked ? 'Delhi' : '')}
+                />
+                <div className="w-9 h-5 bg-gray-200 dark:bg-gray-700 rounded-full peer-checked:bg-blue-600 transition-colors" />
+                <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4" />
+              </div>
+              <span className="text-sm text-gray-700 dark:text-gray-300 select-none flex items-center gap-1">
+                <Home className="w-3.5 h-3.5" /> Internships in my city
+              </span>
+            </label>
+          </div>
+        )}
       </div>
     </div>
   );
