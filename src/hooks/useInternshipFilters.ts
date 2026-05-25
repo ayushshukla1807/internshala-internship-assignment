@@ -59,8 +59,19 @@ export function useInternshipFilters() {
 
         setInternships(parsed);
       } catch (err) {
-        console.error('[useInternshipFilters] fetch failed:', err);
-        setError('Unable to load internships. Please try again later.');
+        console.warn('[useInternshipFilters] Live fetch failed, falling back to local data...', err);
+        try {
+          const fallbackRes = await fetch('/fallback-internships.json');
+          if (!fallbackRes.ok) throw new Error('Fallback also failed');
+          const data: InternshipApiResponse = await fallbackRes.json();
+          const parsed = data.internship_ids
+            .map((id) => data.internships_meta[id.toString()])
+            .filter(Boolean);
+          setInternships(parsed);
+        } catch (fallbackErr) {
+          console.error('[useInternshipFilters] Fallback fetch failed:', fallbackErr);
+          setError('Unable to load internships. Please try again later.');
+        }
       } finally {
         setLoading(false);
       }
@@ -85,16 +96,17 @@ export function useInternshipFilters() {
     let result = internships.filter((internship) => {
       const { keyword, profile, location, wfh, partTime, ppo, minStipend, duration } = filters;
 
-      // Keyword: matches title, company name, or location
+      // Keyword: multi-word search across title, company, profile, and location
       if (keyword) {
-        const kw = keyword.toLowerCase();
-        const matchesTitle = internship.title.toLowerCase().includes(kw);
-        const matchesCompany = internship.company_name.toLowerCase().includes(kw);
-        const matchesLocation = internship.location_names?.some((loc) =>
-          loc.toLowerCase().includes(kw)
-        );
-        const matchesProfile = internship.profile_name?.toLowerCase().includes(kw);
-        if (!matchesTitle && !matchesCompany && !matchesLocation && !matchesProfile) return false;
+        const queryWords = keyword.toLowerCase().split(/\s+/).filter(Boolean);
+        const matchesAllWords = queryWords.every((word) => {
+          const inTitle = internship.title.toLowerCase().includes(word);
+          const inCompany = internship.company_name.toLowerCase().includes(word);
+          const inLocation = internship.location_names?.some((loc) => loc.toLowerCase().includes(word));
+          const inProfile = internship.profile_name?.toLowerCase().includes(word);
+          return inTitle || inCompany || inLocation || inProfile;
+        });
+        if (!matchesAllWords) return false;
       }
 
       // Profile: matches title or profile_name

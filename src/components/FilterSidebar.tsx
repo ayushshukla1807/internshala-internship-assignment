@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Filter, X, Home, IndianRupee, Calendar, ChevronDown, Search } from 'lucide-react';
 import { Filters, INITIAL_FILTERS } from '@/hooks/useInternshipFilters';
+import { ToggleSwitch } from './ui/ToggleSwitch';
 
 interface FilterSidebarProps {
   filters: Filters;
@@ -132,22 +133,13 @@ export default function FilterSidebar({
             { id: 'partTime', label: 'Part-time', key: 'partTime' as keyof Filters },
             { id: 'ppo', label: 'Internships with job offer', key: 'ppo' as keyof Filters },
           ].map(({ id, label, key }) => (
-            <label key={id} htmlFor={id} className="flex items-center gap-2.5 cursor-pointer group">
-              <div className="relative shrink-0">
-                <input
-                  id={id}
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={filters[key] as boolean}
-                  onChange={(e) => set(key, e.target.checked as Filters[typeof key])}
-                />
-                <div className="w-9 h-5 bg-gray-200 dark:bg-gray-700 rounded-full peer-checked:bg-blue-600 transition-colors" />
-                <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4" />
-              </div>
-              <span className="text-sm text-gray-700 dark:text-gray-300 select-none group-hover:text-gray-900 dark:group-hover:text-gray-100">
-                {label}
-              </span>
-            </label>
+            <ToggleSwitch
+              key={id}
+              id={id}
+              label={label}
+              checked={filters[key] as boolean}
+              onChange={(checked) => set(key, checked as Filters[typeof key])}
+            />
           ))}
         </div>
 
@@ -218,22 +210,16 @@ export default function FilterSidebar({
             </div>
 
             {/* Home city toggle */}
-            <label htmlFor="home-city" className="flex items-center gap-2.5 cursor-pointer group">
-              <div className="relative shrink-0">
-                <input
-                  id="home-city"
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={filters.location === 'Delhi'}
-                  onChange={(e) => set('location', e.target.checked ? 'Delhi' : '')}
-                />
-                <div className="w-9 h-5 bg-gray-200 dark:bg-gray-700 rounded-full peer-checked:bg-blue-600 transition-colors" />
-                <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4" />
-              </div>
-              <span className="text-sm text-gray-700 dark:text-gray-300 select-none flex items-center gap-1">
-                <Home className="w-3.5 h-3.5" /> Internships in my city
-              </span>
-            </label>
+            <ToggleSwitch
+              id="home-city"
+              label={
+                <span className="flex items-center gap-1">
+                  <Home className="w-3.5 h-3.5" /> Internships in my city
+                </span>
+              }
+              checked={filters.location === 'Delhi'}
+              onChange={(checked) => set('location', checked ? 'Delhi' : '')}
+            />
           </div>
         )}
       </div>
