@@ -4,8 +4,6 @@ import {
   PlayCircle,
   Calendar,
   IndianRupee,
-  Clock,
-  Heart,
   Share2,
   Copy,
   ExternalLink,
@@ -16,6 +14,7 @@ import { toast } from 'sonner';
 import { useState, useEffect, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import { InternshipDetailsModal } from './InternshipDetailsModal';
+import { formatStipend } from '@/utils';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -24,22 +23,9 @@ interface InternshipCardProps {
   viewMode?: 'list' | 'grid';
 }
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
+// ─── Sub-components (imported from ui/CardElements for modularity) ────────────
 
 import { Tooltip, Badge, CompanyAvatar, BookmarkButton, DetailItem, PostedLabel } from './ui/CardElements';
-
-// ─── Utilities ───────────────────────────────────────────────────────────────
-
-function formatStipend(stipend: Internship['stipend']): string {
-  if (!stipend?.salaryValue1) return stipend?.salary || 'Unpaid';
-  return (
-    new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(stipend.salaryValue1) + '/month'
-  );
-}
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 
@@ -79,7 +65,7 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
     if (localSaved) {
       try {
         currentApps = JSON.parse(localSaved);
-      } catch (e) {}
+      } catch { /* localStorage data was malformed — start fresh */ }
     }
     const newApp = {
       id: internship.id.toString(),
@@ -95,7 +81,7 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
         { id: 'r2', name: 'Interview Round', status: 'upcoming' }
       ]
     };
-    if (!currentApps.some((app: any) => app.id === newApp.id)) {
+    if (!currentApps.some((app: { id: string }) => app.id === newApp.id)) {
       currentApps.unshift(newApp);
       localStorage.setItem('applications_list', JSON.stringify(currentApps));
     }

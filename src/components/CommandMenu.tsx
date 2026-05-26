@@ -2,12 +2,15 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Command } from 'cmdk';
 import { Search, Clock, Briefcase, MapPin, X } from 'lucide-react';
+import {
+  RECENT_SEARCHES_KEY,
+  MAX_RECENT_SEARCHES,
+  QUICK_SEARCH_PROFILES,
+  QUICK_SEARCH_LOCATIONS,
+} from '@/constants';
 
-const MAX_RECENT = 5;
-const STORAGE_KEY = 'internshala_recent_searches';
-
-const QUICK_PROFILES = ['Software Development', 'Data Science', 'Marketing', 'Design', 'Finance', 'Content Writing'];
-const QUICK_LOCATIONS = ['Delhi', 'Mumbai', 'Bengaluru', 'Hyderabad', 'Work From Home'];
+const MAX_RECENT = MAX_RECENT_SEARCHES;
+const STORAGE_KEY = RECENT_SEARCHES_KEY;
 
 export default function CommandMenu() {
   const [open, setOpen] = useState(false);
@@ -129,7 +132,7 @@ export default function CommandMenu() {
               </span>
             }
           >
-            {QUICK_PROFILES.map((profile) => (
+            {QUICK_SEARCH_PROFILES.map((profile) => (
               <Command.Item
                 key={profile}
                 value={profile}
@@ -150,7 +153,7 @@ export default function CommandMenu() {
               </span>
             }
           >
-            {QUICK_LOCATIONS.map((location) => (
+            {QUICK_SEARCH_LOCATIONS.map((location) => (
               <Command.Item
                 key={location}
                 value={location}

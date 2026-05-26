@@ -2,6 +2,7 @@
 import { Internship } from '@/types/internship';
 import { X, MapPin, IndianRupee, Calendar, PlayCircle, Building2, Users, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import { CompanyAvatar, Badge } from './ui/CardElements';
 
 export function InternshipDetailsModal({
@@ -172,9 +173,11 @@ export function InternshipDetailsModal({
             >
               Cancel
             </button>
-            <button
+          <button
               onClick={() => {
-                alert('Applied successfully!');
+                toast.success(`Applied to ${internship.company_name}! 🎉`, {
+                  description: 'Your application has been submitted successfully.',
+                });
                 onClose();
               }}
               className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"

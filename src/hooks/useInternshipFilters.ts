@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Internship, InternshipApiResponse } from '@/types/internship';
+import { parseDurationToMonths } from '@/utils';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -26,15 +27,6 @@ export const INITIAL_FILTERS: Filters = {
   duration: '',
   minStipend: 0,
 };
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function parseDurationToMonths(duration: string): number {
-  const match = duration?.match(/(\d+)\s*(Month|Week)/i);
-  if (!match) return 999;
-  const value = parseInt(match[1], 10);
-  return match[2].toLowerCase().startsWith('week') ? value / 4 : value;
-}
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
 
