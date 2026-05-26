@@ -56,9 +56,25 @@ export default function Header() {
             >
               <Menu className="w-6 h-6" />
             </button>
-            <Link href="/" className="flex items-center flex-shrink-0" aria-label="Internshala Home">
-              <span className="text-xl md:text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-500">
-                internshala
+            <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="Internshala Home">
+              {/* Paper plane SVG — matches Internshala's exact logo */}
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 32 32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                className="shrink-0"
+              >
+                <path d="M2 16 L30 2 L20 30 L14 20 Z" fill="#00ADEF" />
+                <path d="M14 20 L20 30 L17 22 Z" fill="#0087C1" />
+                <line x1="14" y1="20" x2="30" y2="2" stroke="white" strokeWidth="1" opacity="0.35" />
+              </svg>
+              {/* INTERNSHALA wordmark — INTERN dark, SHALA blue */}
+              <span className="text-[19px] font-extrabold tracking-tight leading-none select-none">
+                <span className="text-gray-800 dark:text-gray-100">INTERN</span>
+                <span className="text-[#00ADEF]">SHALA</span>
               </span>
             </Link>
           </div>

@@ -12,11 +12,18 @@ import { ApplicationsHub } from '@/components/ApplicationsHub';
 export const metadata: Metadata = {
   title: 'Internship Search | Internshala',
   description: 'Enterprise-grade clone of the Internshala internship search page. Built with Next.js 14, Tailwind CSS, Framer Motion, and Cmd+K Search.',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   openGraph: {
     title: 'Internship Search | Internshala',
     description: 'Enterprise-grade clone of the Internshala internship search page. Features staggered animations, skeleton loaders, and spotlight search.',
-    url: 'https://internshala-clone-jnzbr2ztw-ayushs-projects-e98c33db.vercel.app',
-    siteName: 'Internshala Clone',
+    url: 'https://internshala-clone-jet.vercel.app',
+    siteName: 'Internshala',
     images: [
       {
         url: 'https://internshala.com/static/images/internships_for_facebook.png',

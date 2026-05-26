@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Internshala paper plane favicon -->
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="#0073E6" opacity="0.1"/>
+  <!-- Paper plane -->
+  <g transform="translate(3, 3)">
+    <!-- Main plane body - pointing upper right -->
+    <path d="M1 13 L25 1 L17 26 L12 18 Z" fill="#0073E6"/>
+    <!-- Shadow/fold -->
+    <path d="M12 18 L17 26 L14 20 Z" fill="#005BB8"/>
+    <!-- Inner line -->
+    <line x1="12" y1="18" x2="25" y2="1" stroke="white" stroke-width="0.8" opacity="0.4"/>
+  </g>
+</svg>
