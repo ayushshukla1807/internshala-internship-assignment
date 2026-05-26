@@ -4,11 +4,13 @@ import FilterSidebar from './FilterSidebar';
 import InternshipCard from './InternshipCard';
 import SkeletonLoader from './SkeletonLoader';
 import { EmptyState } from './ui/EmptyState';
+import { ActiveFilterChips } from './ui/ActiveFilterChips';
+import { TrendingFilters } from './ui/TrendingFilters';
 import { useInternshipFilters } from '@/hooks/useInternshipFilters';
 import { BackToTop } from './ui/BackToTop';
 import { ITEMS_PER_PAGE, SORT_LABELS } from '@/constants';
 import { SortOption } from '@/hooks/useInternshipFilters';
-import { SearchX, LayoutList, LayoutGrid, ChevronDown } from 'lucide-react';
+import { LayoutList, LayoutGrid, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -111,6 +113,12 @@ export default function InternshipList() {
             <span>/</span>
             <span className="text-gray-900 dark:text-gray-200 font-medium">Internships</span>
           </nav>
+
+          {/* Trending Quick-Filter Chips */}
+          <TrendingFilters filters={filters} setFilters={setFilters} />
+
+          {/* Active Filter Chips */}
+          <ActiveFilterChips filters={filters} setFilters={setFilters} />
 
           {/* Total Count Header */}
           {!loading && filteredInternships.length > 0 && (

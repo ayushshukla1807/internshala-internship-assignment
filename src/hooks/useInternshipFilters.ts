@@ -30,12 +30,49 @@ export const INITIAL_FILTERS: Filters = {
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
 
+/** Reads initial filter state from URL query params */
+function filtersFromURL(): Partial<Filters> {
+  if (typeof window === 'undefined') return {};
+  const p = new URLSearchParams(window.location.search);
+  const result: Partial<Filters> = {};
+  if (p.get('q')) result.keyword = p.get('q')!;
+  if (p.get('profile')) result.profile = p.get('profile')!;
+  if (p.get('location')) result.location = p.get('location')!;
+  if (p.get('wfh') === '1') result.wfh = true;
+  if (p.get('partTime') === '1') result.partTime = true;
+  if (p.get('ppo') === '1') result.ppo = true;
+  if (p.get('stipend')) result.minStipend = parseInt(p.get('stipend')!, 10) || 0;
+  if (p.get('duration')) result.duration = p.get('duration')!;
+  return result;
+}
+
+/** Writes current filter state to URL without causing a navigation */
+function syncFiltersToURL(filters: Filters): void {
+  if (typeof window === 'undefined') return;
+  const p = new URLSearchParams();
+  if (filters.keyword) p.set('q', filters.keyword);
+  if (filters.profile) p.set('profile', filters.profile);
+  if (filters.location) p.set('location', filters.location);
+  if (filters.wfh) p.set('wfh', '1');
+  if (filters.partTime) p.set('partTime', '1');
+  if (filters.ppo) p.set('ppo', '1');
+  if (filters.minStipend > 0) p.set('stipend', String(filters.minStipend));
+  if (filters.duration) p.set('duration', filters.duration);
+  const qs = p.toString();
+  window.history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname);
+}
+
 export function useInternshipFilters() {
   const [internships, setInternships] = useState<Internship[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
+  const [filters, setFilters] = useState<Filters>({ ...INITIAL_FILTERS, ...filtersFromURL() });
   const [sortBy, setSortBy] = useState<SortOption>('default');
+
+  // Sync filters → URL whenever they change
+  useEffect(() => {
+    syncFiltersToURL(filters);
+  }, [filters]);
 
   // Fetch internships once on mount
   useEffect(() => {
@@ -196,3 +233,4 @@ export function useInternshipFilters() {
     locationOptions,
   };
 }
+
