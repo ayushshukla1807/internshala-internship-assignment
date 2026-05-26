@@ -5,20 +5,39 @@ import { Internship } from '@/types/internship';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SavedInternshipsDrawerProps {
-  internships: Internship[];
+  internships?: Internship[];
 }
 
-export function SavedInternshipsDrawer({ internships }: SavedInternshipsDrawerProps) {
+export function SavedInternshipsDrawer({ internships: propInternships }: SavedInternshipsDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [savedInternships, setSavedInternships] = useState<Internship[]>([]);
+  const [localInternships, setLocalInternships] = useState<Internship[]>([]);
 
-  // We need to re-read local storage whenever the drawer is opened or storage changes.
+  useEffect(() => {
+    if (propInternships) return;
+    const fetchAll = async () => {
+      try {
+        const fallbackRes = await fetch('/fallback-internships.json');
+        if (!fallbackRes.ok) throw new Error('Failed to load local json');
+        const data = await fallbackRes.json();
+        const parsed = data.internship_ids
+          .map((id: number) => data.internships_meta[id.toString()])
+          .filter(Boolean);
+        setLocalInternships(parsed);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchAll();
+  }, [propInternships]);
+
   const loadSaved = () => {
     const savedIds = Object.keys(localStorage)
       .filter((key) => key.startsWith('bookmark_'))
       .map((key) => parseInt(key.replace('bookmark_', ''), 10));
 
-    const matched = internships.filter((i) => savedIds.includes(i.id));
+    const sourceList = propInternships || localInternships;
+    const matched = sourceList.filter((i) => savedIds.includes(i.id));
     setSavedInternships(matched);
   };
 
@@ -26,7 +45,13 @@ export function SavedInternshipsDrawer({ internships }: SavedInternshipsDrawerPr
     if (isOpen) {
       loadSaved();
     }
-  }, [isOpen, internships]);
+  }, [isOpen, propInternships, localInternships]);
+
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    document.addEventListener('open-saved-drawer', handleOpen);
+    return () => document.removeEventListener('open-saved-drawer', handleOpen);
+  }, []);
 
   const removeBookmark = (id: number) => {
     localStorage.removeItem(`bookmark_${id}`);

@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'sonner';
 import CommandMenu from '@/components/CommandMenu';
 import ScrollToTop from '@/components/ScrollToTop';
-
-const inter = Inter({ subsets: ['latin'] });
+import MobileBottomNav from '@/components/MobileBottomNav';
+import { SavedInternshipsDrawer } from '@/components/SavedInternshipsDrawer';
+import { ApplicationsHub } from '@/components/ApplicationsHub';
 
 export const metadata: Metadata = {
   title: 'Internship Search | Internshala',
@@ -43,12 +43,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-[#f8f9fa] dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-200`}>
+      <body className="font-sans antialiased bg-[#f8f9fa] dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
           <Toaster position="bottom-right" richColors theme="system" closeButton />
           <CommandMenu />
           <ScrollToTop />
+          <MobileBottomNav />
+          <SavedInternshipsDrawer />
+          <ApplicationsHub />
         </ThemeProvider>
       </body>
     </html>

@@ -3,21 +3,38 @@ import { Search, Menu, ChevronDown, Sun, Moon, Command } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
+import { AuthModal } from './AuthModal';
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
   useEffect(() => {
     setMounted(true);
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+
+    const handleOpenAuth = () => {
+      setAuthMode('login');
+      setAuthModalOpen(true);
+    };
+    document.addEventListener('open-auth-modal', handleOpenAuth);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('open-auth-modal', handleOpenAuth);
+    };
   }, []);
 
   const openCommandMenu = () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }));
+  };
+
+  const handleOpenApplications = () => {
+    document.dispatchEvent(new CustomEvent('open-applications-hub'));
   };
 
   return (
@@ -55,6 +72,16 @@ export default function Header() {
                 </div>
               </div>
             ))}
+            <button
+              onClick={handleOpenApplications}
+              className="text-sm font-semibold text-gray-755 dark:text-gray-250 hover:text-blue-600 dark:hover:text-blue-400 py-2 transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              My Applications
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+            </button>
           </nav>
 
           {/* Cmd+K Search Button */}
@@ -82,12 +109,14 @@ export default function Header() {
               </button>
             )}
             <button
+              onClick={() => { setAuthMode('login'); setAuthModalOpen(true); }}
               aria-label="Login"
               className="hidden sm:block text-sm font-medium text-blue-600 border border-blue-600 rounded-lg px-4 py-1.5 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-900/30 transition-colors"
             >
               Login
             </button>
             <button
+              onClick={() => { setAuthMode('register'); setAuthModalOpen(true); }}
               aria-label="Sign up as candidate"
               className="text-sm font-medium text-white bg-blue-600 rounded-lg px-4 py-1.5 hover:bg-blue-700 transition-colors active:scale-95"
             >
@@ -96,6 +125,7 @@ export default function Header() {
           </div>
         </div>
       </div>
+      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} defaultMode={authMode} />
     </header>
   );
 }

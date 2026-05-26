@@ -15,6 +15,7 @@ import { Internship } from '@/types/internship';
 import { toast } from 'sonner';
 import { useState, useEffect, useCallback } from 'react';
 import confetti from 'canvas-confetti';
+import { InternshipDetailsModal } from './InternshipDetailsModal';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -45,10 +46,13 @@ function formatStipend(stipend: Internship['stipend']): string {
 export default function InternshipCard({ internship, viewMode = 'list' }: InternshipCardProps) {
   const [bookmarked, setBookmarked] = useState(false);
   const [applied, setApplied] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem(`bookmark_${internship.id}`);
     if (saved) setBookmarked(true);
+    const hasApplied = localStorage.getItem(`applied_${internship.id}`);
+    if (hasApplied) setApplied(true);
   }, [internship.id]);
 
   const handleBookmark = useCallback(() => {
@@ -65,10 +69,37 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
 
   const handleApply = useCallback(() => {
     setApplied(true);
+    localStorage.setItem(`applied_${internship.id}`, 'true');
     confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } });
     toast.success(`Applied to ${internship.company_name} successfully`);
-    setTimeout(() => setApplied(false), 3000);
-  }, [internship.company_name]);
+
+    // Add to applications hub
+    const localSaved = localStorage.getItem('applications_list');
+    let currentApps = [];
+    if (localSaved) {
+      try {
+        currentApps = JSON.parse(localSaved);
+      } catch (e) {}
+    }
+    const newApp = {
+      id: internship.id.toString(),
+      title: internship.title,
+      companyName: internship.company_name,
+      location: internship.location_names?.join(', ') || 'Remote',
+      stipend: formatStipend(internship.stipend),
+      skills: internship.segment ? [internship.segment, internship.profile_name] : [internship.profile_name || 'General'],
+      appliedDate: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+      status: 'Applied',
+      rounds: [
+        { id: 'r1', name: 'Resume Screening', status: 'current' },
+        { id: 'r2', name: 'Interview Round', status: 'upcoming' }
+      ]
+    };
+    if (!currentApps.some((app: any) => app.id === newApp.id)) {
+      currentApps.unshift(newApp);
+      localStorage.setItem('applications_list', JSON.stringify(currentApps));
+    }
+  }, [internship]);
 
   const handleShare = useCallback(async () => {
     const url = `https://internshala.com/internship/detail/${internship.url}`;
@@ -146,22 +177,29 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
           </div>
         </div>
 
-        <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-800">
+        <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-800 flex gap-2">
+          <button
+            onClick={() => setDetailsOpen(true)}
+            className="flex-1 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 text-sm font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            Details
+          </button>
           <button
             onClick={handleApply}
             disabled={applied}
             aria-label={`Apply to ${internship.title} at ${internship.company_name}`}
-            className="w-full py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-green-600 text-white text-sm font-semibold rounded-lg transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
+            className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-green-600 text-white text-sm font-semibold rounded-lg transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
           >
             {applied ? (
               <>
                 <CheckCircle className="w-4 h-4" /> Applied
               </>
             ) : (
-              'Apply Now'
+              'Apply'
             )}
           </button>
         </div>
+        <InternshipDetailsModal internship={internship} isOpen={detailsOpen} onClose={() => setDetailsOpen(false)} />
       </article>
     );
   }
@@ -288,7 +326,7 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
             </button>
           </Tooltip>
           <button
-            onClick={() => toast.info(`Opening details for ${internship.title}`)}
+            onClick={() => setDetailsOpen(true)}
             aria-label="View internship details"
             className="px-3 py-1.5 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 text-sm font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex items-center gap-1.5"
           >
@@ -311,6 +349,7 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
           </button>
         </div>
       </div>
+      <InternshipDetailsModal internship={internship} isOpen={detailsOpen} onClose={() => setDetailsOpen(false)} />
     </article>
   );
 }

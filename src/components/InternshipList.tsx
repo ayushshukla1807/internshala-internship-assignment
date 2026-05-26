@@ -5,7 +5,6 @@ import InternshipCard from './InternshipCard';
 import SkeletonLoader from './SkeletonLoader';
 import { EmptyState } from './ui/EmptyState';
 import { useInternshipFilters } from '@/hooks/useInternshipFilters';
-import { SavedInternshipsDrawer } from './SavedInternshipsDrawer';
 import { BackToTop } from './ui/BackToTop';
 import { ITEMS_PER_PAGE, SORT_LABELS } from '@/constants';
 import { SortOption } from '@/hooks/useInternshipFilters';
