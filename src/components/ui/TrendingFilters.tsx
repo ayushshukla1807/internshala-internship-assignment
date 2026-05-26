@@ -2,13 +2,13 @@
 import { Filters } from '@/hooks/useInternshipFilters';
 
 const TRENDING_PROFILES = [
-  { label: '💻 Software Dev', value: 'Software Development' },
-  { label: '📊 Data Science', value: 'Data Science' },
-  { label: '🎨 Design', value: 'Design' },
-  { label: '📝 Marketing', value: 'Marketing' },
-  { label: '💰 Finance', value: 'Finance' },
-  { label: '✍️ Content', value: 'Content Writing' },
-  { label: '🏠 Work From Home', value: null, wfh: true },
+  { label: 'Software Dev', value: 'Software Development' },
+  { label: 'Data Science', value: 'Data Science' },
+  { label: 'Design', value: 'Design' },
+  { label: 'Marketing', value: 'Marketing' },
+  { label: 'Finance', value: 'Finance' },
+  { label: 'Content', value: 'Content Writing' },
+  { label: 'Work From Home', value: null, wfh: true },
 ];
 
 interface TrendingFiltersProps {
