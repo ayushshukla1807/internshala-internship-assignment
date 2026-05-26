@@ -238,24 +238,16 @@ export function ApplicationsHub() {
                             </span>
                             <div className="flex gap-2">
                               {app.currentRound.userAttending === null ? (
-                                <>
                                   <button
                                     onClick={() => handleAttendingResponse(app.id, 'yes')}
                                     className="px-3.5 py-1 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-colors"
                                   >
                                     Yes
                                   </button>
-                                  <button
-                                    onClick={() => handleAttendingResponse(app.id, 'no')}
-                                    className="px-3.5 py-1 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-350 text-xs font-semibold rounded-lg transition-colors"
-                                  >
-                                    No
-                                  </button>
-                                </>
                               ) : (
                                 <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-600 dark:text-green-400">
                                   <CheckCircle className="w-3.5 h-3.5" />
-                                  {app.currentRound.userAttending === 'yes' ? 'Confirmed Attending' : 'Declined'}
+                                  Confirmed Attending
                                 </span>
                               )}
                             </div>

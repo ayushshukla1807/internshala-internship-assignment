@@ -87,6 +87,22 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
     }
   }, [internship]);
 
+  const handleWithdraw = useCallback(() => {
+    setApplied(false);
+    localStorage.removeItem(`applied_${internship.id}`);
+    toast.success(`Application withdrawn from ${internship.company_name}`);
+
+    // Remove from applications hub
+    const localSaved = localStorage.getItem('applications_list');
+    if (localSaved) {
+      try {
+        const currentApps = JSON.parse(localSaved);
+        const filtered = currentApps.filter((app: { id: string }) => app.id !== internship.id.toString());
+        localStorage.setItem('applications_list', JSON.stringify(filtered));
+      } catch { /* ignore */ }
+    }
+  }, [internship]);
+
   const handleShare = useCallback(async () => {
     const url = `https://internshala.com/internship/detail/${internship.url}`;
     if (navigator.share) {
@@ -184,6 +200,15 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
               'Apply'
             )}
           </button>
+          {applied && (
+            <button
+              onClick={handleWithdraw}
+              className="py-2 px-3 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-900/40 text-sm font-semibold rounded-lg transition-colors border border-red-200 dark:border-red-900/50 flex-shrink-0"
+              aria-label={`Withdraw application from ${internship.title}`}
+            >
+              Withdraw
+            </button>
+          )}
         </div>
         <InternshipDetailsModal internship={internship} isOpen={detailsOpen} onClose={() => setDetailsOpen(false)} />
       </article>
@@ -333,6 +358,15 @@ export default function InternshipCard({ internship, viewMode = 'list' }: Intern
               'Apply Now'
             )}
           </button>
+          {applied && (
+            <button
+              onClick={handleWithdraw}
+              className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-900/40 text-sm font-semibold rounded-lg transition-colors border border-red-200 dark:border-red-900/50"
+              aria-label={`Withdraw application from ${internship.title}`}
+            >
+              Withdraw
+            </button>
+          )}
         </div>
       </div>
       <InternshipDetailsModal internship={internship} isOpen={detailsOpen} onClose={() => setDetailsOpen(false)} />
