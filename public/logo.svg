@@ -2,14 +2,14 @@
   <!-- Paper Plane (matches Internshala's exact style) -->
   <g transform="translate(0, 4)">
     <!-- Main plane body -->
-    <path d="M2 20 L38 2 L26 40 L18 28 Z" fill="#00BFFF" opacity="0.9"/>
+    <path d="M2 20 L38 2 L26 40 L18 28 Z" fill="#00ADEF"/>
     <!-- Wing fold -->
-    <path d="M18 28 L26 40 L22 30 Z" fill="#0080CC"/>
+    <path d="M18 28 L26 40 L22 30 Z" fill="#0087C1"/>
     <!-- Tail line -->
-    <path d="M18 28 L38 2 L22 30" fill="none" stroke="#0080CC" stroke-width="0.5"/>
+    <path d="M18 28 L38 2 L22 30" fill="none" stroke="#0087C1" stroke-width="0.5"/>
   </g>
   <!-- INTERN text (dark gray) -->
   <text x="46" y="32" font-family="Arial, sans-serif" font-weight="700" font-size="18" letter-spacing="0.5" fill="#2D3142">INTERN</text>
   <!-- SHALA text (blue) -->
-  <text x="114" y="32" font-family="Arial, sans-serif" font-weight="700" font-size="18" letter-spacing="0.5" fill="#1A9EDD">SHALA</text>
+  <text x="114" y="32" font-family="Arial, sans-serif" font-weight="700" font-size="18" letter-spacing="0.5" fill="#00ADEF">SHALA</text>
 </svg>
